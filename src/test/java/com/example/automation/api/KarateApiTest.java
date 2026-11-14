@@ -9,6 +9,6 @@ public class KarateApiTest {
         Assumptions.assumeTrue(Boolean.parseBoolean(System.getProperty("karate.enabled", "true")),
             "Karate API tests disabled with -Dkarate.enabled=false");
         String tagExpression = System.getProperty("karate.tags", "@api");
-        return Karate.run("classpath:karate/posts.feature").tags(tagExpression);
+        return Karate.run("classpath:karate/posts.feature", "classpath:karate/put.feature").tags(tagExpression);
     }
 }
