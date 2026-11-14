@@ -21,6 +21,7 @@ From the project root:
 - Run all UI and API tests: `mvn test -Pall`
 - Run a member UI module: `mvn test -Pui '-Dcucumber.filter.tags=@member'`
 - Run a cart API module: `mvn test -Papi '-Dkarate.tags=@cart'`
+- Run only the PUT API scenario: `mvn test -Papi '-Dkarate.tags=@api_put'`
 - Run selected UI and API modules together: `mvn test -Pall '-Dcucumber.filter.tags=@member' '-Dkarate.tags=@cart'`
 - Override browser and app settings: `mvn test -Pui '-Dcucumber.filter.tags=@member' '-Dapp.baseUrl=https://test.example' '-Dapp.username=test-user' '-Dapp.password=test-password' -Dbrowser=chrome -Dheadless=true`
 - Override API module settings: `mvn test -Papi '-Dkarate.tags=@posts' '-Dapi.posts.baseUrl=https://posts-api.test.example'`
@@ -89,7 +90,7 @@ The runner disables ANSI-colored output with `cucumber.ansi-colors.disabled=true
 
 ## Karate API tests
 
-Karate API tests use their own JUnit 5 class and resource folder, selected by `RunCucumberTest`, so they run alongside Cucumber UI tests without being discovered as Cucumber features. The JSONPlaceholder sample uses `@api @posts` and checks GET, POST, and 404 responses. Each API module owns its URL in its feature: for example, posts reads `api.posts.baseUrl` then `API_POSTS_BASE_URL`, while cart can read `api.cart.baseUrl` then `API_CART_BASE_URL`. Set the module property in Maven or the API workflow; the posts feature has a public demo endpoint fallback for local runs. Do not define one shared API URL in `pom.xml` or `config.properties`. Karate reports are written under `target/karate-reports`.
+Karate API tests use their own JUnit 5 class and resource folder, selected by `RunCucumberTest`, so they run alongside Cucumber UI tests without being discovered as Cucumber features. The JSONPlaceholder examples use `@api @posts`; the PUT feature is additionally tagged `@api_put` and replaces post 1 with a full payload. Run just that scenario with `mvn test -Papi '-Dkarate.tags=@api_put'`. Each API module owns its URL in its feature: for example, posts reads `api.posts.baseUrl` then `API_POSTS_BASE_URL`, while cart can read `api.cart.baseUrl` then `API_CART_BASE_URL`. Set the module property in Maven or the API workflow; the posts feature has a public demo endpoint fallback for local runs. Do not define one shared API URL in `pom.xml` or `config.properties`. Karate reports are written under `target/karate-reports`.
 
 ## Continuous integration
 
