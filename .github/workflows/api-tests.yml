@@ -1,0 +1,59 @@
+name: API tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      api_tags:
+        description: Karate tag expression for API scenarios
+        required: false
+        default: '@api'
+        type: string
+      api_module:
+        description: API module key used for its base URL property (for example posts or cart)
+        required: false
+        default: posts
+        type: string
+      module_base_url:
+        description: Base URL for the selected API module
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    env:
+      API_MODULE_BASE_URL: ${{ github.event.inputs.module_base_url || vars.API_MODULE_BASE_URL || '' }}
+      API_TAGS: ${{ github.event.inputs.api_tags || vars.API_TAGS || '@api' }}
+      API_MODULE: ${{ github.event.inputs.api_module || vars.API_MODULE || 'posts' }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Run API tests
+        run: >-
+          mvn --batch-mode --no-transfer-progress clean test -Papi
+          "-Dkarate.tags=${API_TAGS}"
+          "-Dapi.${API_MODULE}.baseUrl=${API_MODULE_BASE_URL}"
+
+      - name: Upload API test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-reports
+          if-no-files-found: warn
+          path: |
+            target/karate-reports/
+            target/allure-results/
